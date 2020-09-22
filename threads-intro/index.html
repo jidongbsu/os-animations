@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="konva.js"></script>
+</head>
+<body>
+
+<h1>Processes writing in the Same Memory Slot</h1>
+<p>This animation is an example of two processes writing into a shared memory slot. Take note that the processes do not know the state of each other. Therefore, if the context switch happens after line 3, but before line 5 the memory will be overwritten with the wrong value.</p>
+
+<button onclick="runNextCommand()">Run the Next line in the Process</button>
+<button onclick="sendInterrupt()">Context Switch</button>
+<button onclick="correctAnim()">Run Animation for Correct Result</button>
+<button onclick="incorrectAnim()">Run Animation for Incorrect Result</button>
+
+
+<div id="container"></div>
+<script src="os1.js">
+
+</script>
+</body>
+</html>
