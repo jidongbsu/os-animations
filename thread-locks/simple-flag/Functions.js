@@ -10,7 +10,6 @@ var mutexLines = [
     {text: "}"},
     {text: ""},
     {text: "void lock(lock_t*mutex) {", index: 0, name: "lock" }, //action: () => console.log("Test the flag")},
-    {text: ""},
     {text: "\t\twhile (mutex->flag == 1)  // TEST the flag", index: 1, action: function () {
        if(mutexState.value == 1){
 
@@ -23,7 +22,7 @@ var mutexLines = [
     {text: "}", index: 4, return: 0},
     {text: "",},
     {text: "void unlock(lock_t*mutex) {", index: 5, name: "unlock"},
-    {text: "\t\t//Reset To Zero"},
+    {text: "\t\t//Reset to zero"},
     {text: "\t\tmutex->flag = 0;", index: 6, action: () => mutexState.value = 0},
     {text: "}", index: 7, return: 0}
 ];
@@ -38,7 +37,7 @@ var criticalFunctionLines = [{text: "void init(lock_t*mutex) {"},
     {text: "", index: -1},
     {text: "void criticalFunction() {", index: 0},
     {text: "\t\tlock(); // Obtain the lock", index: 1, func: "mutex.lock"},
-    {text: "\t\t\t; // Do Something Critical", index: 2},
+    {text: "\t\t\t; // Do something critical", index: 2},
     {text: "\t\tunlock() //Release the lock;", index: 3, func: "mutex.unlock"},
     {text: "}", index: 4, return: 0},
 
