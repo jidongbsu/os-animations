@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dinning Philosiphers</title>
+    <script src="konva.js"></script>
+</head>
+<body>
+
+<h1>Dinning Philosophers Problem</h1>
+<p><b>Broken Solution: Philosophers First Reaching To Their Left</b></p>
+<p>Philosophers spend their time primarily thinking. Every once in a while they become hungry. So, after thinking, each philosopher will take a chance to eat spaghetti.</p>
+<p>In this example, three philosophers are striving to eat Noodley Magnificance with chopsticks. However, there are only three chopsticks. And, each chopstick is protected with a semaphore.</p>
+<p>The philosophers agree to share their chopsticks ( not advisable durring a pandemic ). When a philosopher is done thinking, he will first reach for the chopstick on his left. If the chopstick is not there, he will fall into a sleep until it is released to him. After obtaining the left chopstick, the philosopher will reach for the chopstick on his right.</p>
+<p>When each philosopher obtains the chopstick on their left, simultaniously, there is no chopstick available on any philosopher's right. So, they all sleep at the same time, and are unable to wake each other. This is called deadlock.</p>
+
+<button onclick="runNextCommand()">Next Step</button>
+
+<div id="container"></div>
+<script src="phil.js">
+
+</script>
+</body>
+</html>
