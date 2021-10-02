@@ -1,3 +1,4 @@
+// Authors: Rezvan Joshaghani   rezvanjoshaghani@u.boisestate.edu
 class Process{
     constructor(id){
         this.pid=id;

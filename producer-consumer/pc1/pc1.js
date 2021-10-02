@@ -1,3 +1,4 @@
+// Authors: Rezvan Joshaghani   rezvanjoshaghani@u.boisestate.edu
 // first we need to create a stage
 var stage = new Konva.Stage({
     container: 'container',   // id of container <div>
