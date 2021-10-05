@@ -185,7 +185,7 @@ function makeText(x,y,str,id) {
         fontSize: 18,
         fontFamily: 'Calibri',
         fill: '#000000',
-        width: 400,
+        width: 500,
         padding: 20,
         // align: 'center',
     });
@@ -355,7 +355,7 @@ var rect1 = new Konva.Rect({
     stroke: '#555',
     strokeWidth: 5,
     fill: '#ddd',
-    width: 400,
+    width: 300,
     height: 250,
     shadowColor: 'black',
     shadowBlur: 10,
@@ -372,7 +372,7 @@ var rect2 = new Konva.Rect({
     stroke: '#555',
     strokeWidth: 5,
     fill: '#ddd',
-    width: 400,
+    width: 300,
     height: 250,
     shadowColor: 'black',
     shadowBlur: 10,
@@ -382,14 +382,14 @@ var rect2 = new Konva.Rect({
     cornerRadius: 10,
 });
 
-var rect3 = new Konva.Rect({
+var rectmain = new Konva.Rect({
     x: 860,
     y: 60,
     id:"prec3",
     stroke: '#555',
     strokeWidth: 5,
     fill: '#ddd',
-    width: 400,
+    width: 500,
     height: 250,
     shadowColor: 'black',
     shadowBlur: 10,
@@ -451,40 +451,6 @@ var bufferStatus = new Konva.Text({
 });
 
 
-var mutexRec = new Konva.Rect({
-    x: 20,
-    y: 350,
-    id:"murec",
-    stroke: '#555',
-    strokeWidth: 5,
-    fill: 'green',
-    width: 100,
-    height: 100,
-    shadowColor: 'black',
-    shadowBlur: 10,
-    shadowOffsetX: 10,
-    shadowOffsetY: 10,
-    shadowOpacity: 0.2,
-});
-
-var condRec = new Konva.Rect({
-    x: 200,
-    y: 350,
-    id:"condrec",
-    stroke: '#555',
-    strokeWidth: 5,
-    fill: 'green',
-    width: 100,
-    height: 100,
-    shadowColor: 'black',
-    shadowBlur: 10,
-    shadowOffsetX: 10,
-    shadowOffsetY: 10,
-    shadowOpacity: 0.2,
-});
-
-
-
 //add the shapes to the layer
 layer.add(rect1);
 layer.add(p1);
@@ -492,7 +458,7 @@ layer.add(p1);
 layer.add(rect2);
 layer.add(p2);
 
-//layer.add(rect3);
+layer.add(rectmain);
 //layer.add(p3);
 
 // layer.add(mutexRec);
@@ -532,6 +498,20 @@ for (let i=0;i<consumerProg.length;i++){
     layer.add(t)
 }
 
+var mainProg=["1. int buffer[MAX];" ,
+    "2. sem_t empty;" ,
+    "3. sem_t full;" ,
+    "4. int main(int argc, char *argv[]) {" ,
+    "5. \t\t // ..." ,
+    "6. \t\t sem_init(&empty, 0, MAX); // MAX are empty" ,
+    "7. \t\t sem_init(&full, 0, 0);    // 0 are full" ,
+    "8. \t\t // ..." ,
+    "9. } "];
+
+for (let i=0;i<mainProg.length;i++){
+    let t=makeText(860,80+(i*20),mainProg[i],'3'+(i+1));
+    layer.add(t)
+}
 //for (let i=0;i<consumerProg.length;i++){
 //    let t=makeText(860,80+(i*20),consumerProg[i],'3'+(i+1));
 //    layer.add(t)
