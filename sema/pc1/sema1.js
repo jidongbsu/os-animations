@@ -35,11 +35,6 @@ class Process{
         // console.log("IN Run Mutex= "+mutex);
         // console.log("IN Run "+ this.status );
 
-        this.prog();
-
-    }
-
-    prog(){
         this.status = "Running";
         if (this.pc == 1) {
             this.drawChanges();
@@ -57,6 +52,9 @@ class Process{
             }
             this.pc++;
         } else if (this.pc == 4) {
+            this.drawChanges();
+            this.pc++;
+        } else if (this.pc == 5) {
             if(this.pid==1) {
                 bufferPos++;
                 this.changeBuffer(bufferPos - 1,1);
@@ -69,9 +67,6 @@ class Process{
                 count=0;
                 stage.find('#condrec').fill('green');
             }
-            this.drawChanges();
-            this.pc++;
-        } else if (this.pc == 5) {
             if (this.ax < 3) { // ax is the loop count
                 if(this.pid==1 && empty==0) {
                   empty++;

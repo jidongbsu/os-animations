@@ -10,9 +10,8 @@ var full=0;
 var count1=0;
 var count2=0;
 var count3=0;
-var enterflag=0;
-var stayinsidePut=0;
 var getoutofPut=0;
+var switchtorun=0;
 
 // then create layer
 var layer = new Konva.Layer();
@@ -26,7 +25,7 @@ class Thread{
         this.status="Ready";
         this.pc=1;
         this.i=0;
-        this.countCopy=0;
+        this.runlineinPut=0;
         this.finished=false;
     }
     run(){
@@ -63,53 +62,53 @@ class Thread{
             this.pc++;
         } else if (this.pc == 4) {
             if(this.pid==1) { // producer 1
-                bufText[fillptr].text(count1);
-                this.changeBuffer(fillptr,1);
-                if(enterflag==0){
+                if(this.runlineinPut==0){
+                    stage.find('#prog'+'4'+1).fontStyle('bold'); // highlight line 1 of the put function.
+                    stage.find('#prog'+'4'+2).fontStyle('normal'); // in case line 2 is already highlighted, set it back to normal.
+                    this.runlineinPut=1;
+                    this.drawChanges();
+                }else if(this.runlineinPut==1){
+                    stage.find('#prog'+'4'+2).fontStyle('bold'); // highlight line 2 of the put function.
+                    stage.find('#prog'+'4'+1).fontStyle('normal'); // line 1 goes to normal.
+                    bufText[fillptr].text(count1); // when we highlight line 2, it indicates line 1 is finished, and we put the item in the buffer.
+                    this.changeBuffer(fillptr,1); // and change buffer color.
+                    this.runlineinPut=2;
+                    this.drawChanges();
+                 }else{   
+                    stage.find('#prog'+'4'+2).fontStyle('normal');
                     fillptr=(fillptr+1)%5;
                     stage.find('#arrowup').x(fillptr*100);
-                }else if(stayinsidePut==0){
-                    stage.find('#prog'+'4'+1).fontStyle('bold');
-                    stayinsidePut=1;
-                }else{
-                    stage.find('#prog'+'4'+2).fontStyle('bold');
-                    stage.find('#prog'+'4'+1).fontStyle('normal');
-                    fillptr=(fillptr+1)%5;
-                    stage.find('#arrowup').x(fillptr*100);
-                    getoutofPut=1;
+                    this.runlineinPut=0; // reset runlineinPut to 0; prepare for next time when we enter into put().
+            //        getoutofPut=1;
+                    this.drawChanges();
+                    this.pc++;
                 }
             }
             else if((this.pid==2)){ // producer 2
-                bufText[fillptr].text(count2);
-                this.changeBuffer(fillptr,1);
-                if(enterflag==0){
-                    fillptr=(fillptr+1)%5;
-                    stage.find('#arrowup').x(fillptr*100);
-                }else if(stayinsidePut==0){
-                    stage.find('#prog'+'4'+1).fontStyle('bold');
-                    stayinsidePut=1;
+                if(this.runlineinPut==0){
+                    stage.find('#prog'+'4'+1).fontStyle('bold'); // highlight line 1 of the put function.
+                    stage.find('#prog'+'4'+2).fontStyle('normal'); // in case line 2 is already highlighted, set it back to normal.
+                    this.runlineinPut=1;
+                    this.drawChanges();
+                }else if(this.runlineinPut==1){
+                    stage.find('#prog'+'4'+2).fontStyle('bold'); // highlight line 2 of the put function.
+                    stage.find('#prog'+'4'+1).fontStyle('normal'); // line 1 goes to normal.
+                    bufText[fillptr].text(count2); // when we highlight line 2, it indicates line 1 is finished, and we put the item in the buffer.
+                    this.changeBuffer(fillptr,1); // and change buffer color.
+                    this.runlineinPut=2;
+                    this.drawChanges();
                 }else{
-                    stage.find('#prog'+'4'+2).fontStyle('bold');
-                    stage.find('#prog'+'4'+1).fontStyle('normal');
+                    stage.find('#prog'+'4'+2).fontStyle('normal');
                     fillptr=(fillptr+1)%5;
                     stage.find('#arrowup').x(fillptr*100);
-                    getoutofPut=1;
+                    this.runlineinPut=0; // reset runlineinPut to 0; prepare for next time when we enter into put().
+              //      getoutofPut=1;
+                    this.drawChanges();
+                    this.pc++;
                 }
-            }
-            else if((this.pid==3)){ // consumer 1 
-                bufText[useptr].text("");
-                this.changeBuffer(useptr,0);
-                useptr=(useptr+1)%5;
-                stage.find('#arrowdown').x(useptr*100);
-            }
-            this.drawChanges();
-            if(enterflag==0 || this.pid==3){
+            }else if((this.pid==3)){ // consumer 1 
+                this.drawChanges();
                 this.pc++;
-            }else if(getoutofPut==1){
-                this.pc++;
-                stayinsidePut=0;
-                getoutofPut=0;
-                stage.find('#prog'+'4'+2).fontStyle('normal');
             }
         } else if (this.pc == 5) {
             if ((this.pid==1) && count1 < 10) { // count1 is the loop count
@@ -119,7 +118,7 @@ class Thread{
                 c1.stop();
                 this.pc = 2; // for loop
             }
-            else if((this.pid==2) && count2 < 10){
+            else if((this.pid==2) && count2 < 10){ // count2 is the loop count
                 count2++;
                 full++;
                 this.drawChanges();
@@ -127,10 +126,14 @@ class Thread{
                 this.pc = 2; // for loop
             }
             else if((this.pid==3) && count3 < 10){
+                bufText[useptr].text(""); // we are about to run line 5, and at this moment we finish line 4 first.
+                this.changeBuffer(useptr,0);
+                useptr=(useptr+1)%5;
+                stage.find('#arrowdown').x(useptr*100);
                 count3++;
                 empty++;
                 this.drawChanges();
-                p1.stop();
+                p1.stop(); // stop means ready...
                 p2.stop(); // wake up one of them, if we want to be more accurate
                 this.pc = 2; // for loop
             }
@@ -192,6 +195,10 @@ class Thread{
 
     drawChanges(){
         if(!this.finished){
+            if(switchtorun==1){
+                this.status = "Running";
+                switchtorun=0;
+            }
             this.makeBold(this.pc);
         //    stage.find('#txt:p' + this.pid + 'stat').text(this.status);
         //    stage.find('#txt:p' + this.pid + 'pc').text(this.pc);
@@ -292,27 +299,22 @@ function switchThreads() {
 
     if (runningThread==1){
             p1.stop(); // stop producer 1
-            p2.drawChanges();
             runningThread=2; // switch to producer 2
+//            switchtorun=1;
+            p2.drawChanges();
     }
     else if(runningThread==2){
             p2.stop(); // stop producer 2
-            c1.drawChanges();
             runningThread=3;  // switch to consumer 1
+//            switchtorun=1;
+            c1.drawChanges();
     }
     else if(runningThread==3){
             c1.stop(); // stop consumer 1
-            p1.drawChanges();
             runningThread=1; // switch to producer 1
+//            switchtorun=1;
+            p1.drawChanges();
     }
-}
-
-function enterput(){
-    enterflag=1;
-}
-
-function noenterput(){
-    enterflag=0;
 }
 
 // since this text is inside of a defined area, we can center it using
@@ -650,12 +652,12 @@ var producerProg=["1. int i;" ,
     "5. \t\t sem_post(&full);} "];
 
 for (let i=0;i<producerProg.length;i++){
-    let t=makeText(20,80+(i*20),producerProg[i],'1'+(i+1));
+    let t=makeText(20,80+(i*20),producerProg[i],'1'+(i+1)); // producer 1 code, #prog1
     layer.add(t);
 }
 
 for (let i=0;i<producerProg.length;i++){
-    let t=makeText(440,80+(i*20),producerProg[i],'2'+(i+1));
+    let t=makeText(440,80+(i*20),producerProg[i],'2'+(i+1)); // producer 2 code, #prog2
     layer.add(t);
 }
 
@@ -666,7 +668,7 @@ var consumerProg=["1. int i;" ,
     "5. \t\t sem_post(&empty);} "];
 
 for (let i=0;i<consumerProg.length;i++){
-    let t=makeText(860,80+(i*20),consumerProg[i],'3'+(i+1));
+    let t=makeText(860,80+(i*20),consumerProg[i],'3'+(i+1)); // consumer code, #prog3
     layer.add(t);
 }
 
@@ -674,7 +676,7 @@ var putProg=["1. buffer[fill] = value;" ,
     "2. fill = (fill + 1) % MAX; "];
 
 for (let i=0;i<putProg.length;i++){
-    let t=makeText(440,280+(i*20),putProg[i],'4'+(i+1));
+    let t=makeText(440,280+(i*20),putProg[i],'4'+(i+1)); // put function code is #prog4
     layer.add(t);
 }
 
@@ -683,7 +685,7 @@ var getProg=["1. int tmp = buffer[use];" ,
     "3. return tmp; "];
 
 for (let i=0;i<getProg.length;i++){
-    let t=makeText(860,280+(i*20),getProg[i],'5'+(i+1));
+    let t=makeText(860,280+(i*20),getProg[i],'5'+(i+1)); // get function code is #prog5
     layer.add(t);
 }
 
