@@ -9,7 +9,20 @@
 <body>
 
 <h1>Introduction to Paging</h1>
-<label>mov</label> <input type="text" id="textIn"><label>,eax      </label><button onclick="translateAddress()">Run</button>
+
+<ul>
+    <li>VPN: Virtual Page Number</li>
+    <li>PFN: Page Frame Number</li>
+    <li>VPN MASK = 0x30 = 110000</li>
+    <li>SHIFT= 4 (the number of bits in the offset)</li>
+    <li>PTE: Page Table Entry</li>
+    <li>PTBR: Page Table Base Register</li>
+
+</ul>
+
+
+
+<label>mov</label> <input type="text" id="textIn"><label>,%eax</label><button onclick="startAnimation()">Start</button><button onclick="translateAddress()">next</button>
 
 <div id="container"></div>
 <script src="paging.js">

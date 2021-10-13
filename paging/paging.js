@@ -11,6 +11,9 @@ var layer = new Konva.Layer();
 var virtualPageNumber;
 var physicalPageFrame;
 var addressOffset;
+var val;
+var animationStep=0;
+var binPF;
 
 // vp# -> pf#
 var pageTable=[3,7,5,2]
@@ -68,7 +71,8 @@ var cellWidth=100;
 var cellHeight=50;
 var xStart=40;
 var yStart=100;
-
+var offsetValue;
+var bin;
 
 var vMemory = new Konva.Text({
     x: xStart+10,
@@ -205,9 +209,9 @@ for (let i = 0; i < 6 ; i++) {
 for (let i = 0; i < 7 ; i++) {
 
     if (i<3)
-        drawRectWithText(vAddressBitXStart+i*vAddressBitCellWidth, vAddressBitYStart+500, vAddressBitCellWidth, vAddressBitCellHeight, 0, pfnColor,"pa"+i);
+        drawRectWithText(vAddressBitXStart+i*vAddressBitCellWidth, vAddressBitYStart+500, vAddressBitCellWidth, vAddressBitCellHeight, "", "#c8c5c5","pa"+i);
     else
-        drawRectWithText(vAddressBitXStart+i*vAddressBitCellWidth, vAddressBitYStart+500, vAddressBitCellWidth, vAddressBitCellHeight, 0, offsetColor,"pa"+i);
+        drawRectWithText(vAddressBitXStart+i*vAddressBitCellWidth, vAddressBitYStart+500, vAddressBitCellWidth, vAddressBitCellHeight, "", "#C8C5C5","pa"+i);
 
 
 
@@ -219,6 +223,7 @@ for (let i = 0; i < 7 ; i++) {
     }
 
     var arrow = new Konva.Arrow({
+        id:"arrow:"+i,
         x: vAddressBitXStart+i*vAddressBitCellWidth + vAddressBitCellWidth/2 ,
         y: arrowY,
         points: [0, 0, 0, arrowLen],
@@ -260,6 +265,19 @@ var vOffsetText = new Konva.Text({
 });
 
 layer.add(vOffsetText)
+
+
+var phADDRText = new Konva.Text({
+    id: "txt:phAddr",
+    x: vAddressBitXStart,
+    y: vAddressBitYStart+600,
+    text: "Physical Address",
+    fontSize: 20,
+    fontFamily: 'Calibri',
+    fill: 'black',
+});
+
+layer.add(phADDRText)
 
 
 var pfnText = new Konva.Text({
@@ -316,6 +334,19 @@ drawPageTable(ptXstart,ptYstart+ptCellheight,ptCellWidth,ptCellheight,0,pageTabl
 drawPageTable(ptXstart,ptYstart+ptCellheight*2,ptCellWidth,ptCellheight,1,pageTable[1],"False","True")
 drawPageTable(ptXstart,ptYstart+ptCellheight*3,ptCellWidth,ptCellheight,2,pageTable[2],"True","False")
 drawPageTable(ptXstart,ptYstart+ptCellheight*4,ptCellWidth,ptCellheight,3,pageTable[3],"True","True")
+
+var redLine = new Konva.Line({
+    id: 'line',
+    points: [ptXstart, ptYstart+ptCellheight, ptXstart+4*ptCellWidth,ptYstart+ptCellheight],
+    stroke: 'black',
+    strokeWidth: 2,
+    lineCap: 'round',
+    lineJoin: 'round',
+});
+
+layer.add(redLine);
+
+
 
 var pageTableText = new Konva.Text({
     x: xStart+300,
@@ -374,9 +405,43 @@ var resultText = new Konva.Text({
 });
 layer.add(resultText)
 
-function translateAddress() {
 
-    for (let i=0;i<8;i++){
+
+function startAnimation(){
+
+    stage.find('#arrow:3').stroke('black');
+    stage.find('#arrow:4').stroke('black');
+    stage.find('#arrow:5').stroke('black');
+    stage.find('#arrow:6').stroke('black');
+
+    stage.find('#line').stroke('black');
+    stage.find('#txt:phAddr').text("Physical Address").fill("black");
+
+    stage.find('#txt:pfn').text("PFN");
+    stage.find('#txt:poffset').text("physical offset");
+    stage.find('#txt:vpn').text("VPN");
+    stage.find('#txt:voffset').text("virtual offset");
+
+    stage.find('#txt:pa0').text('');
+    stage.find('#txt:pa1').text('');
+    stage.find('#txt:pa2').text('');
+    stage.find('#txt:pa3').text('');
+    stage.find('#txt:pa4').text('');
+    stage.find('#txt:pa5').text('');
+    stage.find('#txt:pa6').text('');
+    stage.find('#txt:pa7').text('');
+
+    stage.find('#rec:pa0').fill("#c8c5c5");
+    stage.find('#rec:pa1').fill("#c8c5c5");
+    stage.find('#rec:pa2').fill("#c8c5c5");
+    stage.find('#rec:pa3').fill("#c8c5c5");
+    stage.find('#rec:pa4').fill("#c8c5c5");
+    stage.find('#rec:pa5').fill("#c8c5c5");
+    stage.find('#rec:pa6').fill("#c8c5c5");
+    stage.find('#rec:pa7').fill("#c8c5c5");
+
+
+    for (let i = 0; i < 8; i++) {
         stage.find('#rec:vp' + virtualPageNumber).fill(vpnColor);
         stage.find('#rec:pf' + physicalPageFrame).fill(pfnColor);
         stage.find('#rec:pte:vpn' + virtualPageNumber).fill("#ffffff");
@@ -385,71 +450,146 @@ function translateAddress() {
         stage.find('#rec:pte:pb' + virtualPageNumber).fill("#ffffff");
     }
 
-    for (let i=1;i<=19;i++){
-        stage.find('#txt:prog:'+i).fontStyle('normal');
+    for (let i = 1; i <= 19; i++) {
+        stage.find('#txt:prog:' + i).fontStyle('normal');
     }
 
     stage.find('#txt:result').text("").fill("black");
 
-    let val=document.getElementById('textIn').value
-    if(parseInt(val)>=0 && parseInt(val)<=64){
-        let bin=String(dec2bin(val)).padStart(6,"0")
-        virtualPageNumber = parseInt(bin[0]+''+bin[1],2);
-        physicalPageFrame = pageTable[virtualPageNumber]
-        let offsetValue = parseInt(bin[2]+''+bin[3]+''+bin[4]+''+bin[5],2);
+    val = document.getElementById('textIn').value
 
-        selectedColor="#e5f1a3";
+    if(parseInt(val)>=0 && parseInt(val)<=64) {
+
+        bin = String(dec2bin(val)).padStart(6, "0")
+        virtualPageNumber = parseInt(bin[0] + '' + bin[1], 2);
+        physicalPageFrame = pageTable[virtualPageNumber]
+        offsetValue = parseInt(bin[2] + '' + bin[3] + '' + bin[4] + '' + bin[5], 2);
+
+        selectedColor = "#e5f1a3";
 
         stage.find('#rec:vp' + virtualPageNumber).fill(selectedColor);
-        stage.find('#rec:pf' + physicalPageFrame).fill(selectedColor);
-        stage.find('#rec:pte:vpn' + virtualPageNumber).fill(selectedColor);
-        stage.find('#rec:pte:fpn' + virtualPageNumber).fill(selectedColor);
-        stage.find('#rec:pte:vb' + virtualPageNumber).fill(selectedColor);
-        stage.find('#rec:pte:pb' + virtualPageNumber).fill(selectedColor);
 
-
-
-        for (let i = 0; i < 6 ; i++) {
+        for (let i = 0; i < 6; i++) {
             stage.find('#txt:va' + i).text(bin[i]);
-            if(i>1){
-                stage.find('#txt:pa' + (i+1)).text(bin[i]);
-            }
+            // if (i > 1) {
+            //     stage.find('#txt:pa' + (i + 1)).text(bin[i]);
+            // }
         }
-
-        let binPF= String(dec2bin(physicalPageFrame)).padStart(3,"0")
-        stage.find('#txt:pa0').text(binPF[0]);
-        stage.find('#txt:pa1').text(binPF[1]);
-        stage.find('#txt:pa2').text(binPF[2]);
-
         stage.find('#txt:vpn').text("VPN = "+virtualPageNumber);
-        stage.find('#txt:pfn').text("PFN = "+physicalPageFrame);
         stage.find('#txt:voffset').text("virtual offset = " + offsetValue);
-        stage.find('#txt:poffset').text("physical offset = " + offsetValue);
 
-        if(virtualPageNumber==0 || virtualPageNumber==1){
-            stage.find('#txt:result').text("Error: SEGMENTATION FAULT").fill("red");
-            stage.find('#txt:prog:11').fontStyle('bold');
-            stage.find('#txt:prog:12').fontStyle('bold');
-        }
-        else if(virtualPageNumber==2){
-            stage.find('#txt:result').text("Error: PROTECTION FAULT").fill("red");
-            stage.find('#txt:prog:13').fontStyle('bold');
-            stage.find('#txt:prog:14').fontStyle('bold');
-
-        }
-        else if(virtualPageNumber==3){
-            stage.find('#txt:result').text("eax=AccessMemory("+ parseInt(binPF[0]+''+binPF[1]+''+binPF[2]+''+bin[2]+''+bin[3]+''+bin[4]+''+bin[5],2)+")").fill("green");
-            stage.find('#txt:prog:15').fontStyle('bold');
-            stage.find('#txt:prog:16').fontStyle('bold');
-            stage.find('#txt:prog:17').fontStyle('bold');
-            stage.find('#txt:prog:18').fontStyle('bold');
-            stage.find('#txt:prog:19').fontStyle('bold');
-        }
+        stage.find('#txt:prog:2').fontStyle('bold');
+        animationStep=1;
     }
     else{
         alert("The Virtual Address entered is not valid!")
+        animationStep=0;
     }
     layer.draw()
+
+}
+
+function translateAddress() {
+    if(animationStep===0){
+        startAnimation();
+    }
+    else if (animationStep===1){
+        console.log("hi")
+        stage.find('#txt:prog:2').fontStyle('normal');
+        stage.find('#txt:prog:5').fontStyle('bold');
+        stage.find('#line').stroke('red');
+        animationStep++;
+        layer.draw()
+
+    }
+    else if (animationStep===2){
+        stage.find('#txt:prog:5').fontStyle('normal');
+        stage.find('#txt:prog:8').fontStyle('bold');
+        stage.find('#rec:pte:vpn' + virtualPageNumber).fill(selectedColor);
+        stage.find('#rec:pte:vb' + virtualPageNumber).fill(selectedColor);
+        stage.find('#rec:pte:pb' + virtualPageNumber).fill(selectedColor);
+        stage.find('#rec:pte:fpn' + virtualPageNumber).fill(selectedColor);
+        animationStep++;
+        layer.draw()
+
+    }
+    else if (animationStep===3){
+        stage.find('#txt:prog:8').fontStyle('normal');
+        binPF= String(dec2bin(physicalPageFrame)).padStart(3,"0")
+
+        stage.find('#txt:pfn').text("PFN = "+physicalPageFrame);
+        stage.find('#txt:poffset').text("physical offset = " + offsetValue);
+
+        if(virtualPageNumber===0 || virtualPageNumber===1){
+            stage.find('#txt:result').text("Error: SEGMENTATION FAULT").fill("red");
+            stage.find('#txt:prog:11').fontStyle('bold');
+            stage.find('#txt:prog:12').fontStyle('bold');
+            animationStep=0;
+
+        }
+        else if(virtualPageNumber===2){
+            stage.find('#txt:result').text("Error: PROTECTION FAULT").fill("red");
+            stage.find('#txt:prog:13').fontStyle('bold');
+            stage.find('#txt:prog:14').fontStyle('bold');
+            animationStep=0;
+        }
+        else if(virtualPageNumber===3){
+            stage.find('#txt:prog:15').fontStyle('bold');
+            stage.find('#txt:prog:17').fontStyle('bold');
+
+
+            stage.find('#txt:pa0').text(binPF[0]);
+            stage.find('#txt:pa1').text(binPF[1]);
+            stage.find('#txt:pa2').text(binPF[2]);
+            stage.find('#txt:pa3').text(bin[2]);
+            stage.find('#txt:pa4').text(bin[3]);
+            stage.find('#txt:pa5').text(bin[4]);
+            stage.find('#txt:pa6').text(bin[5]);
+            stage.find('#txt:pa7').text(bin[6]);
+
+            stage.find('#rec:pa0').fill(pfnColor);
+            stage.find('#rec:pa1').fill(pfnColor);
+            stage.find('#rec:pa2').fill(pfnColor);
+            stage.find('#rec:pa3').fill(offsetColor);
+            stage.find('#rec:pa4').fill(offsetColor);
+            stage.find('#rec:pa5').fill(offsetColor);
+            stage.find('#rec:pa6').fill(offsetColor);
+            stage.find('#rec:pa7').fill(offsetColor);
+
+            stage.find('#arrow:3').stroke('red');
+            stage.find('#arrow:4').stroke('red');
+            stage.find('#arrow:5').stroke('red');
+            stage.find('#arrow:6').stroke('red');
+
+            animationStep++;
+        }
+
+
+        layer.draw();
+    }
+    else if(animationStep===4){
+
+        stage.find('#txt:prog:17').fontStyle('normal');
+        stage.find('#txt:prog:18').fontStyle('bold');
+        stage.find('#txt:phAddr').text("Physical Address=  "+ parseInt(binPF[0]+''+binPF[1]+''+binPF[2]+''+bin[2]+''+bin[3]+''+bin[4]+''+bin[5],2)).fill("green");
+        animationStep++;
+        layer.draw();
+
+    }
+    else if(animationStep===5) {
+        stage.find('#txt:prog:18').fontStyle('normal');
+        stage.find('#txt:prog:19').fontStyle('bold');
+        stage.find('#rec:pf' + physicalPageFrame).fill(selectedColor);
+        stage.find('#txt:result').text("eax=AccessMemory("+ parseInt(binPF[0]+''+binPF[1]+''+binPF[2]+''+bin[2]+''+bin[3]+''+bin[4]+''+bin[5],2)+")").fill("green");
+
+        animationStep=0;
+        layer.draw();
+    }
+
+
+
+
+
 
 
 }
