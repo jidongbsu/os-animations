@@ -335,18 +335,6 @@ drawPageTable(ptXstart,ptYstart+ptCellheight*2,ptCellWidth,ptCellheight,1,pageTa
 drawPageTable(ptXstart,ptYstart+ptCellheight*3,ptCellWidth,ptCellheight,2,pageTable[2],"True","False")
 drawPageTable(ptXstart,ptYstart+ptCellheight*4,ptCellWidth,ptCellheight,3,pageTable[3],"True","True")
 
-var redLine = new Konva.Line({
-    id: 'line',
-    points: [ptXstart, ptYstart+ptCellheight, ptXstart+4*ptCellWidth,ptYstart+ptCellheight],
-    stroke: 'black',
-    strokeWidth: 2,
-    lineCap: 'round',
-    lineJoin: 'round',
-});
-
-layer.add(redLine);
-
-
 
 var pageTableText = new Konva.Text({
     x: xStart+300,
@@ -423,6 +411,44 @@ layer.add(resultText)
 
 
 
+var ptbrArrow = new Konva.Arrow({
+    id: 'ptbrArrow',
+    points: [ptXstart-40,  ptYstart+ptCellheight-30, ptXstart,  ptYstart+ptCellheight],
+    pointerLength: 10,
+    pointerWidth: 10,
+    fill: 'black',
+    stroke: 'black',
+    strokeWidth: 2,
+});
+
+layer.add(ptbrArrow)
+
+var ptbrArrowText = new Konva.Text({
+    x: ptXstart-60,
+    y: ptYstart+ptCellheight-50,
+    text: 'PTBR',
+    fontSize: 20,
+    fontFamily: 'Calibri',
+    fill: 'black',
+});
+
+layer.add(ptbrArrowText)
+
+for (let i=1;i<5;i++){
+    let VPNArrowText = new Konva.Arrow({
+        id: 'arrow:'+(i-1),
+        points: [ptXstart-40,  ptYstart+ptCellheight/2+ptCellheight*i, ptXstart,  ptYstart+ptCellheight/2+ptCellheight*i],
+        pointerLength: 10,
+        pointerWidth: 10,
+        fill: 'black',
+        stroke: 'black',
+        strokeWidth: 2,
+    });
+    layer.add(VPNArrowText)
+}
+
+
+
 function startAnimation(){
 
     stage.find('#arrow:3').stroke('black');
@@ -430,7 +456,9 @@ function startAnimation(){
     stage.find('#arrow:5').stroke('black');
     stage.find('#arrow:6').stroke('black');
 
-    stage.find('#line').stroke('black');
+    stage.find('#arrow:'+virtualPageNumber).fill('black');
+    stage.find('#arrow:'+virtualPageNumber).stroke('black');
+
     stage.find('#txt:phAddr').text("Physical Address").fill("black");
 
     stage.find('#txt:pfn').text("PFN");
@@ -487,6 +515,8 @@ function startAnimation(){
         stage.find('#rec:pte:pb' + virtualPageNumber).fill("#ffffff");
     }
 
+
+    // reset the program font style to normal
     for (let i = 1; i <= 19; i++) {
         stage.find('#txt:prog:' + i).fontStyle('normal');
     }
@@ -554,7 +584,8 @@ function translateAddress() {
     else if (animationStep===2){
         stage.find('#txt:prog:5').fontStyle('normal');
         stage.find('#txt:prog:8').fontStyle('bold');
-        stage.find('#line').stroke('red');
+        stage.find('#arrow:'+virtualPageNumber).fill('red');
+        stage.find('#arrow:'+virtualPageNumber).stroke('red');
         animationStep++;
         layer.draw()
     }
@@ -570,6 +601,8 @@ function translateAddress() {
 
     }
     else if (animationStep===4){
+        stage.find('#arrow:'+virtualPageNumber).fill('black');
+        stage.find('#arrow:'+virtualPageNumber).stroke('black');
         binPF= String(dec2bin(physicalPageFrame)).padStart(3,"0")
 
         if(virtualPageNumber===0 || virtualPageNumber===1){
