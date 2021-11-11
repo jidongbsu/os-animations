@@ -319,16 +319,18 @@ drawRectWithText(addrBoxX,addrBoxY,boxWidth,boxHeight,"Virtual Address","#ffffff
 drawRectWithText(addrBoxX+boxWidth,addrBoxY,boxWidth,boxHeight,"VPN","#ffffff","b1");
 drawRectWithText(addrBoxX+2*boxWidth,addrBoxY,boxWidth,boxHeight,"offset","#ffffff","b2");
 drawRectWithText(addrBoxX+3*boxWidth,addrBoxY,boxWidth,boxHeight,"VPN_MASK","#ffffff","b3");
-drawRectWithText(addrBoxX+4*boxWidth,addrBoxY,boxWidth,boxHeight,"Shift","#ffffff","b4");
-drawRectWithText(addrBoxX+5*boxWidth,addrBoxY,boxWidth,boxHeight,"Success","#ffffff","b5");
+drawRectWithText(addrBoxX+4*boxWidth,addrBoxY,boxWidth,boxHeight,"OFFSET_MASK","#ffffff","b6");
+drawRectWithText(addrBoxX+5*boxWidth,addrBoxY,boxWidth,boxHeight,"Shift","#ffffff","b4");
+drawRectWithText(addrBoxX+6*boxWidth,addrBoxY,boxWidth,boxHeight,"Success","#ffffff","b5");
 
 
 drawRectWithText(addrBoxX,addrBoxY+boxHeight,boxWidth,boxHeight,"","#ffffff","boxvaddr");
 drawRectWithText(addrBoxX+boxWidth,addrBoxY+boxHeight,boxWidth,boxHeight,"","#ffffff","vpnBox");
 drawRectWithText(addrBoxX+2*boxWidth,addrBoxY+boxHeight,boxWidth,boxHeight,"","#ffffff","offsetBox");
-drawRectWithText(addrBoxX+3*boxWidth,addrBoxY+boxHeight,boxWidth,boxHeight,"0x30\n110000","#ffffff","vpnMask");
-drawRectWithText(addrBoxX+4*boxWidth,addrBoxY+boxHeight,boxWidth,boxHeight,"4\n000100","#ffffff","shift");
-drawRectWithText(addrBoxX+5*boxWidth,addrBoxY+boxHeight,boxWidth,boxHeight,"","#ffffff","success");
+drawRectWithText(addrBoxX+3*boxWidth,addrBoxY+boxHeight,boxWidth,boxHeight,"110000","#ffffff","vpnMask");
+drawRectWithText(addrBoxX+4*boxWidth,addrBoxY+boxHeight,boxWidth,boxHeight,"001111","#ffffff","offsetMask");
+drawRectWithText(addrBoxX+5*boxWidth,addrBoxY+boxHeight,boxWidth,boxHeight,"4","#ffffff","shift");
+drawRectWithText(addrBoxX+6*boxWidth,addrBoxY+boxHeight,boxWidth,boxHeight,"","#ffffff","success");
 
 
 // *********************************************************************************************************************
@@ -373,7 +375,7 @@ for (let i=0;i<consumerProg.length;i++){
 
 
 var resultText = new Konva.Text({
-    x: 800,
+    x: 870,
     y: 20,
     id: "txt:result",
     text: "",

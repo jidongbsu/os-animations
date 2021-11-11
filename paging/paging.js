@@ -355,11 +355,13 @@ var boxHeight=50;
 
 drawRectWithText(addrBoxX,addrBoxY,boxWidth,boxHeight,"Virtual Address","#ffffff","b1");
 drawRectWithText(addrBoxX+boxWidth,addrBoxY,boxWidth,boxHeight,"VPN_MASK","#ffffff","b2");
-drawRectWithText(addrBoxX+2*boxWidth,addrBoxY,boxWidth,boxHeight,"Shift","#ffffff","b3");
+drawRectWithText(addrBoxX+2*boxWidth,addrBoxY,boxWidth,boxHeight,"OFFSET_MASK","#ffffff","b5");
+drawRectWithText(addrBoxX+3*boxWidth,addrBoxY,boxWidth,boxHeight,"Shift","#ffffff","b3");
 
 drawRectWithText(addrBoxX,addrBoxY+boxHeight,boxWidth,boxHeight,"","#ffffff","boxvaddr");
-drawRectWithText(addrBoxX+boxWidth,addrBoxY+boxHeight,boxWidth,boxHeight,"0x30\n110000","#ffffff","vpnMask");
-drawRectWithText(addrBoxX+2*boxWidth,addrBoxY+boxHeight,boxWidth,boxHeight,"4\n000100","#ffffff","shift");
+drawRectWithText(addrBoxX+boxWidth,addrBoxY+boxHeight,boxWidth,boxHeight,"110000","#ffffff","vpnMask");
+drawRectWithText(addrBoxX+2*boxWidth,addrBoxY+boxHeight,boxWidth,boxHeight,"001111","#ffffff","offsetMask");
+drawRectWithText(addrBoxX+3*boxWidth,addrBoxY+boxHeight,boxWidth,boxHeight,"4","#ffffff","shift");
 
 
 var consumerProg=[
@@ -380,7 +382,7 @@ var consumerProg=[
     "15.   else",
     "16.   \t\t // Access is OK: form physical address and fetch it",
     "17.   \t\t offset = VirtualAddress & OFFSET_MASK",
-    "18.   \t\t PhysAddr = (PTE.PFN << PFN_SHIFT) | offset",
+    "18.   \t\t PhysAddr = (PTE.PFN << SHIFT) | offset",
     "19.   \t\t Register = AccessMemory(PhysAddr)",
     "20.   End"];
 
@@ -436,7 +438,7 @@ layer.add(ptbrArrowText)
 
 for (let i=1;i<5;i++){
     let VPNArrowText = new Konva.Arrow({
-        id: 'arrow:'+(i-1),
+        id: 'vpn:arrow:'+(i-1),
         points: [ptXstart-40,  ptYstart+ptCellheight/2+ptCellheight*i, ptXstart,  ptYstart+ptCellheight/2+ptCellheight*i],
         pointerLength: 10,
         pointerWidth: 10,
@@ -584,8 +586,8 @@ function translateAddress() {
     else if (animationStep===2){
         stage.find('#txt:prog:5').fontStyle('normal');
         stage.find('#txt:prog:8').fontStyle('bold');
-        stage.find('#arrow:'+virtualPageNumber).fill('red');
-        stage.find('#arrow:'+virtualPageNumber).stroke('red');
+        stage.find('#vpn:arrow:'+virtualPageNumber).fill('red');
+        stage.find('#vpn:arrow:'+virtualPageNumber).stroke('red');
         animationStep++;
         layer.draw()
     }
@@ -601,8 +603,8 @@ function translateAddress() {
 
     }
     else if (animationStep===4){
-        stage.find('#arrow:'+virtualPageNumber).fill('black');
-        stage.find('#arrow:'+virtualPageNumber).stroke('black');
+        stage.find('#vpn:arrow:'+virtualPageNumber).fill('black');
+        stage.find('#vpn:arrow:'+virtualPageNumber).stroke('black');
         binPF= String(dec2bin(physicalPageFrame)).padStart(3,"0")
 
         if(virtualPageNumber===0 || virtualPageNumber===1){
