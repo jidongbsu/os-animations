@@ -311,7 +311,7 @@ layer.add(tlbText)
 
 var addrBoxX=0;
 var addrBoxY=20;
-var boxWidth=120;
+var boxWidth=140;
 var boxHeight=50;
 
 
@@ -340,7 +340,7 @@ drawRectWithText(addrBoxX+6*boxWidth,addrBoxY+boxHeight,boxWidth,boxHeight,"","#
 
 var programXStart=0;
 var programYStart=150;
-var programBoxWidth=420;
+var programBoxWidth=450;
 var programBoxHeight=430;
 
 var consumerProg=[
@@ -376,7 +376,7 @@ for (let i=0;i<consumerProg.length;i++){
 
 var resultText = new Konva.Text({
     x: 870,
-    y: 20,
+    y: 0,
     id: "txt:result",
     text: "",
     fontSize: 20,
