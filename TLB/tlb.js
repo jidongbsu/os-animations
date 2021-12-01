@@ -1,18 +1,22 @@
 // Authors: Rezvan Joshaghani   rezvanjoshaghani@u.boisestate.edu
 
+// main stage that contains the canvas
 var stage = new Konva.Stage({
     container: 'container',   // id of container <div>
     width: 2000,
     height: 1000
 });
 
+// The main layer that will contain all the shapes
+// We need to all all the shapes to the layer after creating them so they get drawn
 var layer = new Konva.Layer();
 
+// variables to compute the VPN, FPN, offset
 var virtualPageNumber;
 var physicalPageFrame;
 var addressOffset;
-var val;
-var animationStep=0;
+var val; // The user memory address input
+var animationStep=0; // indicates the status of animation, 0 is the initial state that every thing is resets
 var binPF;
 var tlb=[];
 var pfnColor="#98DDDD"
@@ -21,6 +25,13 @@ var vpnColor="#E0B6FF"
 // vp# -> pf#
 var pageTable=[3,7,5,2]
 
+// -----------------------------------------------------------------------------------------------------------------
+// |  Function to make a text at position x,y                                                                      |
+// |    x,y: rendering coordinates                                                                                 |
+// |    str: text string                                                                                           |
+// |    id: the shape id that can be used to retrieved the shape from the stage                                    |
+// |  returns the shape object (make suer to add the result to the layer)                                          |
+// -----------------------------------------------------------------------------------------------------------------
 function makeText(x,y,str,id) {
 
     return new Konva.Text({
@@ -38,7 +49,21 @@ function makeText(x,y,str,id) {
 
 }
 
+// -----------------------------------------------------------------------------------------------------------------
+// |  Function to make a rectangle with black text inside it at position x,y                                       |
+// |    x,y: rendering coordinates                                                                                 |
+// |    w,h: width and height of rectangle                                                                         |
+// |    str: text string                                                                                           |
+// |    fill: fill color of the rectangle                                                                          |
+// |    id: the shape id that can be used to retrieved the shape from the stage                                    |
+// |      * The rectangle final id is in the form rec:id                                                           |
+// |      * The text final id is in the form txt:id                                                                |
+// |  No return value the shape is added to the layer by the function                                              |
+// -----------------------------------------------------------------------------------------------------------------
+
 function drawRectWithText(x,y,w,h,str,fill,id) {
+
+    // create the text shape
     let text = new Konva.Text({
         id: "txt:"+id,
         x:  x,
@@ -50,7 +75,7 @@ function drawRectWithText(x,y,w,h,str,fill,id) {
         align: 'center',
         padding: 10,
     });
-
+    // create the rectangle
     let idH = new Konva.Rect({
         id: "rec:"+id,
         x: x,
@@ -70,13 +95,17 @@ function drawRectWithText(x,y,w,h,str,fill,id) {
 // *********************************************************************************************************************
 // ***************************** Make Virtual Memory *******************************************************************
 // *********************************************************************************************************************
+
+// Memory cell width and height
 var cellWidth=100;
 var cellHeight=50;
+// Memory x and y coordinate
 var xStart=500;
 var yStart=200;
-var offsetValue;
-var bin;
+var offsetValue; // Input Memory offset value
+var bin; // binary representation of the input memory value
 
+// virtual memory text
 var vMemory = new Konva.Text({
     x: xStart+10,
     y: yStart-30,
@@ -87,7 +116,9 @@ var vMemory = new Konva.Text({
 });
 layer.add(vMemory)
 
+// create the virtual memory table
 for (let i = 0; i < 4 ; i++) {
+    // the text on the left side of the virtual memory from 0 to 48
     var vAddressNum = new Konva.Text({
         x: xStart-30,
         y: yStart+i*cellHeight-10,
@@ -97,9 +128,11 @@ for (let i = 0; i < 4 ; i++) {
         fill: 'black',
     });
     layer.add(vAddressNum)
+    // The virtual memory cell
     drawRectWithText(xStart, yStart+i*cellHeight, cellWidth, cellHeight, "page"+String(i), "#e0b6ff","vp"+i);
 }
 
+// Make the last address number (64) on the left side of the table
 var vAddressNum = new Konva.Text({
     x: xStart-30,
     y: yStart+4*cellHeight-10,
@@ -115,11 +148,15 @@ layer.add(vAddressNum)
 // ***************************** Make Physical Memory ******************************************************************
 // *********************************************************************************************************************
 
+// Physical Memory cell width and height
 var phCellWidth=200;
 var phCellHeight=50;
+// Physical Memory x,y
 var phXStart=1200;
 var phYStart=40;
 
+
+// physical memory text
 var phMemory = new Konva.Text({
     x: phXStart+10,
     y: phYStart-30,
@@ -130,7 +167,10 @@ var phMemory = new Konva.Text({
 });
 layer.add(phMemory)
 
-
+// the content of the physical memory for each cell each array index maps to a physical memory cell and its color
+// unused cells are light gray
+// cells that map to a virtual page are light blue
+// cell reserved for os is dark gray
 const rectContent=[
     {"text":"Reserved for OS",
     "color":"#5F5F5F"},
@@ -151,8 +191,11 @@ const rectContent=[
 ];
 
 
+// Make the physical memory table
+
 for (let i = 0; i < 8 ; i++) {
 
+    // left side numbers 0 to 112
     var phAddressNum = new Konva.Text({
         x: phXStart-40,
         y: phYStart+i*phCellHeight-10,
@@ -162,6 +205,7 @@ for (let i = 0; i < 8 ; i++) {
         fill: 'black',
     });
     layer.add(phAddressNum)
+    // physical memory cell
     drawRectWithText(phXStart, phYStart+i*phCellHeight, phCellWidth, phCellHeight, rectContent[i].text, rectContent[i].color,"pf"+i);
     var phFrameNum = new Konva.Text({
         x: phXStart+phCellWidth+5,
@@ -173,7 +217,7 @@ for (let i = 0; i < 8 ; i++) {
     });
     layer.add(phFrameNum)
 }
-
+// last number (128) on the left side of the physical memory table
 var phAddressNum = new Konva.Text({
     x: phXStart-40,
     y: phYStart+8*phCellHeight-10,
@@ -189,7 +233,23 @@ layer.add(phAddressNum)
 // ******************************** Make Page Table ********************************************************************
 // *********************************************************************************************************************
 
-function drawPageTable(x,y,w,h,vpn,fpn,vb,pb)
+
+// -----------------------------------------------------------------------------------------------------------------
+// |  Function to make a row of a page table at position x,y                                                       |
+// |    x,y: rendering coordinates                                                                                 |
+// |    w,h: width and height of rectangle                                                                         |
+// |    vpn: virtual page number value                                                                             |
+// |    fpn: frame page number                                                                                     |
+// |    vb: value of the verification bit                                                                          |
+// |    pb: value of the protection bit                                                                            |
+// |    The shape id that can be used to retrieved the shape from the stage                                        |
+// |      * To access the vpn cell in the row use "pte:vpn"+virtual page number for example for vpn=1 -> pte:vpn1  |
+// |      * To access the fpn cell in the row use "pte:fpn"+virtual page number for example for vpn=1 -> pte:fpn1  |
+// |      * To access the vb cell in the row use "pte:vb"+ virtual page number for example for vpn=1 -> pte:vb1    |
+// |      * To access the pb cell in the row use "pte:pb"+virtual page number for example for vpn=1 -> pte:pb1     |
+// |  No return value the shape is added to the layer by the function                                              |
+// -----------------------------------------------------------------------------------------------------------------
+function drawPageTableRow(x, y, w, h, vpn, fpn, vb, pb)
 {
     drawRectWithText(x,y,w,h,vpn,"#ffffff","pte:vpn"+vpn)
     drawRectWithText(x+w,y,w,h,fpn,"#ffffff","pte:fpn"+vpn)
@@ -204,12 +264,16 @@ ptCellWidth=100
 ptCellheight=50
 
 
-drawPageTable(ptXstart,ptYstart,ptCellWidth,ptCellheight,"VPN","PFN","Valid\n bit","Protection\n bit")
-drawPageTable(ptXstart,ptYstart+ptCellheight,ptCellWidth,ptCellheight,0,pageTable[0],"True","False")
-drawPageTable(ptXstart,ptYstart+ptCellheight*2,ptCellWidth,ptCellheight,1,pageTable[1],"False","True")
-drawPageTable(ptXstart,ptYstart+ptCellheight*3,ptCellWidth,ptCellheight,2,pageTable[2],"True","True")
-drawPageTable(ptXstart,ptYstart+ptCellheight*4,ptCellWidth,ptCellheight,3,pageTable[3],"True","True")
+// make the page table row by row
 
+drawPageTableRow(ptXstart,ptYstart,ptCellWidth,ptCellheight,"VPN","PFN","Valid\n bit","Protection\n bit")
+drawPageTableRow(ptXstart,ptYstart+ptCellheight,ptCellWidth,ptCellheight,0,pageTable[0],"True","False")
+drawPageTableRow(ptXstart,ptYstart+ptCellheight*2,ptCellWidth,ptCellheight,1,pageTable[1],"False","True")
+drawPageTableRow(ptXstart,ptYstart+ptCellheight*3,ptCellWidth,ptCellheight,2,pageTable[2],"True","True")
+drawPageTableRow(ptXstart,ptYstart+ptCellheight*4,ptCellWidth,ptCellheight,3,pageTable[3],"True","True")
+
+
+// the red line indicating the start of the page table
 var redLine = new Konva.Line({
     id: 'line',
     points: [ptXstart, ptYstart+ptCellheight, ptXstart+4*ptCellWidth,ptYstart+ptCellheight],
@@ -222,7 +286,7 @@ var redLine = new Konva.Line({
 layer.add(redLine);
 
 
-
+// text for page table title
 var pageTableText = new Konva.Text({
     x: ptXstart,
     y: ptYstart-30,
@@ -233,6 +297,7 @@ var pageTableText = new Konva.Text({
 });
 layer.add(pageTableText)
 
+// The arrow showing the ptbr
 var ptbrArrow = new Konva.Arrow({
     id: 'ptbrArrow',
     points: [ptXstart-40,  ptYstart+ptCellheight-30, ptXstart,  ptYstart+ptCellheight],
@@ -244,6 +309,8 @@ var ptbrArrow = new Konva.Arrow({
 });
 
 layer.add(ptbrArrow)
+
+// text beside the arrow showing the ptbr
 
 var ptbrArrowText = new Konva.Text({
     x: ptXstart-60,
@@ -274,7 +341,22 @@ for (let i=1;i<5;i++){
 // *************************************** Make TLB ********************************************************************
 // *********************************************************************************************************************
 
-function drawTLBTable(x,y,w,h,vpn,fpn,pb,rid)
+
+// -----------------------------------------------------------------------------------------------------------------
+// |  Function to make a row of TLB at position x,y                                                                |
+// |    x,y: rendering coordinates                                                                                 |
+// |    w,h: width and height of rectangle                                                                         |
+// |    vpn: virtual page number value                                                                             |
+// |    fpn: frame page number                                                                                     |
+// |    pb: value of the protection bit                                                                            |
+// |    rid: row id                                                                                                |
+// |    The shape id that can be used to retrieved the shape from the stage                                        |
+// |      * To access the vpn cell in the row use "tlb:vpn"+rid for example for rid=1 -> pte:vpn1                  |
+// |      * To access the fpn cell in the row use "tlb:fpn"+rid for example for rid=1 -> pte:fpn1                  |
+// |      * To access the pb cell in the row use "tlb:pb"+rid for example for rid=1 -> pte:pb1                     |
+// |  No return value the shape is added to the layer by the function                                              |
+// -----------------------------------------------------------------------------------------------------------------
+function drawTLBTableRow(x,y,w,h,vpn,fpn,pb,rid)
 {
     drawRectWithText(x,y,w,h,vpn,"#ffffff","tlb:vpn:"+rid)
     drawRectWithText(x+w,y,w,h,fpn,"#ffffff","tlb:fpn:"+rid)
@@ -286,10 +368,11 @@ tlbCellheight=50
 tlbXstart=700
 tlbYstart=200
 
-drawTLBTable(tlbXstart,tlbYstart,tlbCellWidth,tlbCellheight,"VPN","PFN","Protection\n bit",0)
-drawTLBTable(tlbXstart,tlbYstart+tlbCellheight,tlbCellWidth,tlbCellheight,"","","",1)
-drawTLBTable(tlbXstart,tlbYstart+tlbCellheight*2,tlbCellWidth,tlbCellheight,"","","",2)
-drawTLBTable(tlbXstart,tlbYstart+tlbCellheight*3,tlbCellWidth,tlbCellheight,"","","",3)
+// make the tlb
+drawTLBTableRow(tlbXstart,tlbYstart,tlbCellWidth,tlbCellheight,"VPN","PFN","Protection\n bit",0)
+drawTLBTableRow(tlbXstart,tlbYstart+tlbCellheight,tlbCellWidth,tlbCellheight,"","","",1)
+drawTLBTableRow(tlbXstart,tlbYstart+tlbCellheight*2,tlbCellWidth,tlbCellheight,"","","",2)
+drawTLBTableRow(tlbXstart,tlbYstart+tlbCellheight*3,tlbCellWidth,tlbCellheight,"","","",3)
 
 
 
@@ -314,7 +397,7 @@ var addrBoxY=20;
 var boxWidth=120;
 var boxHeight=50;
 
-
+// information row headers
 drawRectWithText(addrBoxX,addrBoxY,boxWidth,boxHeight,"Virtual Address","#ffffff","b0");
 drawRectWithText(addrBoxX+boxWidth,addrBoxY,boxWidth,boxHeight,"VPN","#ffffff","b1");
 drawRectWithText(addrBoxX+2*boxWidth,addrBoxY,boxWidth,boxHeight,"offset","#ffffff","b2");
@@ -323,7 +406,7 @@ drawRectWithText(addrBoxX+4*boxWidth,addrBoxY,boxWidth,boxHeight,"OFFSET_MASK","
 drawRectWithText(addrBoxX+5*boxWidth,addrBoxY,boxWidth,boxHeight,"Shift","#ffffff","b4");
 drawRectWithText(addrBoxX+6*boxWidth,addrBoxY,boxWidth,boxHeight,"Success","#ffffff","b5");
 
-
+// information row values
 drawRectWithText(addrBoxX,addrBoxY+boxHeight,boxWidth,boxHeight,"","#ffffff","boxvaddr");
 drawRectWithText(addrBoxX+boxWidth,addrBoxY+boxHeight,boxWidth,boxHeight,"","#ffffff","vpnBox");
 drawRectWithText(addrBoxX+2*boxWidth,addrBoxY+boxHeight,boxWidth,boxHeight,"","#ffffff","offsetBox");
@@ -342,6 +425,8 @@ var programXStart=0;
 var programYStart=150;
 var programBoxWidth=420;
 var programBoxHeight=430;
+
+// The algorithm program, each line an element in the array to make text generation easier
 
 var consumerProg=[
     " 1.   VPN = (VirtualAddress & VPN_MASK) >> SHIFT" ,
@@ -365,15 +450,21 @@ var consumerProg=[
     "19.   \t\t\t\t\t\t\t\t RetryInstruction()",
     "20.   End"];
 
+// just a gray background for the program block
 drawRectWithText(programXStart,programYStart,programBoxWidth,programBoxHeight,"","#e7e5e5","progRecT")
 
+// generate program text shapes to access each line the id is prog:+line number
+// for example to access line 18 -> prog:18
 for (let i=0;i<consumerProg.length;i++){
     let t=makeText(programXStart,programYStart+(i*20),consumerProg[i],"prog:"+(i+1));
     layer.add(t)
 }
 
 
-
+// The text to show the program final result it can be the following:
+//    * Segmentation Fault (red color)
+//    * Protection Fault   (red color)
+//    * AccessMemory(dd)   (green color)
 var resultText = new Konva.Text({
     x: 870,
     y: 20,
@@ -385,6 +476,11 @@ var resultText = new Konva.Text({
 });
 layer.add(resultText)
 
+// -----------------------------------------------------------------------------------------------------------------
+// |  Function to convert decimal to binary                                                                        |
+// |    dec: input decimal number                                                                                  |
+// |  return the binary value                                                                                      |
+// -----------------------------------------------------------------------------------------------------------------
 
 function dec2bin(dec) {
     return (dec >>> 0).toString(2);
