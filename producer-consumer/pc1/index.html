@@ -1,19 +1,14 @@
-<!--Authors: Rezvan Joshaghani   rezvanjoshaghani@u.boisestate.edu-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <script src="konva.js"></script>
+    <script src="../../konva.js"></script>
 </head>
 <body>
 
 <h1>The Producer/Consumer (Bounded Buffer) Problem Broken Solution 1</h1>
 <p>Producer/Consumer: Single CV And If Statement</p>
-<p>In the example first the consumer 1 runs and because the Buffer is Empty it goes to sleep waiting for a signal.</p>
-<p>Then the producer 1 runs and fill the buffer and send the signal that wakes up consumer 1 but the consumer 1 doesnt get to run next.</p>
-<p>OS choose consumer 2 to run and it consumes buffer content and then OS switch to consumer 1.</p>
-<p>Now consumer 1 wants to get the buffer content but the buffer is empty and error happens.</p>
 
 <button onclick="runNextCommand()">Next Step</button>
 
