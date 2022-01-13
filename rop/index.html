@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ROP</title>
+    <script src="../konva.js"></script>
+</head>
+<body>
+
+<h1>Return Oriented Programming</h1>
+<p>This animation is an example of return oriented programming. We assume the attacker's goal is to call a function: execve("/bin/sh", 0, 0), this will launch a shell. On x86 Linux, when calling a function, we store the first 3 parameters in ebx, ecx, edx, respectively. And if we are making a system call, then we put the system call number in eax. The assembly instruction call gs:[0x10] will make a system call.</p>
+
+<button onclick="Next()">Run the Next Instruction</button>
+
+
+<div id="container"></div>
+<script src="rop.js">
+
+</script>
+</body>
+</html>
