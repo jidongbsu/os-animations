@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>System Calls in Linux</title>
+    <script src="../konva.js"></script>
+</head>
+<body>
+
+<h1>System Calls in Linux</h1>
+<p>This animation is an example showing how system calls work. Let's say we want to call a system call function: kill(), whose system call number on x86_64 is 62, or 0x3e. We first put the system call number in eax, and then we run the assembly instruction "syscall" to make the system call. The animation also shows if a system call pointer is changed by an attacker, then the attacker can hijack the system call.</p>
+
+<button onclick="origflow()">Show Original System Call Flow</button>
+<button onclick="hijackedflow()">Show New System Call Flow</button>
+
+
+<div id="container"></div>
+<script src="syscalls.js">
+
+</script>
+</body>
+</html>
