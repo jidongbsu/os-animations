@@ -1,20 +1,3 @@
-function makeText(x,y,str,id) {
-
-    return new Konva.Text({
-        x: x,
-        y: y,
-        text: str,
-        id: 'prog'+id,
-        fontSize: 18,
-        fontFamily: 'Calibri',
-        fill: '#000000',
-        width: 300,
-        padding: 20,
-        // align: 'center',
-    });
-
-}
-
 // first we need to create a stage
 var stage = new Konva.Stage({
     container: 'container',   // id of container <div>
@@ -40,7 +23,7 @@ function drawTwoArrows(offset,id) {
     	points: [1045, 85+offset, 980, 85+offset],
     	pointerLength: 10,
     	pointerWidth: 10,
-    	id: "arrowl"+id,
+    	id: "arrowl:"+id,
     	fill: 'red',
     	stroke: 'red',
     	strokeWidth: 5,
@@ -113,10 +96,18 @@ var buddy = new Konva.Text({
     fill: '#555',
 });
 
+var p = new Konva.Text({
+    x: xStart1,
+    y: 300,
+    id:'p',
+    text: "p (malloc(1) returns p)",
+    fontSize: 28,
+    fontFamily: 'Calibri',
+    fill: '#555',
+});
+
 // the large memory chunk
 drawRectWithText(xStart1, yStart1, cellWidth1, cellHeight, "", "#82fff7","hpid");
-// draw the first block header
-drawRectWithText(xStart1, yStart1, 10, cellHeight, "", "#cd5c5c","blockheader");
 
 
 var cellWidth=160;
@@ -138,7 +129,7 @@ xStart=680;
 yStart=450;
 cellWidth=300;
 drawRectWithText(xStart, yStart-400, cellWidth, cellHeight, "avail[9] (tag=UNUSED, kval=9)", "#99dd","list 9");
-drawRectWithText(1045, yStart-400, cellWidth, cellHeight, "block header (tag=FREE, kval=9)", "#99dd","node");
+drawRectWithText(1045, yStart-400, cellWidth, cellHeight, "block header (tag=FREE, kval=9)", "#99dd","node9");
 
 drawRectWithText(xStart, yStart-300, cellWidth, cellHeight, "avail[8] (tag=UNUSED, kval=8)", "#99dd","list 8");
 drawRectWithText(xStart, yStart-200, cellWidth, cellHeight, "avail[7] (tag=UNUSED, kval=7)", "#99dd","list 7");
@@ -155,6 +146,16 @@ var arrowBase = new Konva.Arrow({
     pointerLength: 10,
     pointerWidth: 10,
     id: "arrowbase",
+    fill: 'orange',
+    stroke: 'orange',
+    strokeWidth: 5,
+});
+
+var arrowP = new Konva.Arrow({
+    points: [20, 295, 20, 100],
+    pointerLength: 10,
+    pointerWidth: 10,
+    id: "arrowp",
     fill: 'orange',
     stroke: 'orange',
     strokeWidth: 5,
@@ -195,7 +196,7 @@ var arrowLastNext9 = new Konva.Arrow({
     tension: 0.5,
     pointerLength: 10,
     pointerWidth: 10,
-    id: "arrowbignext",
+    id: "arrownext9",
     fill: 'blue',
     stroke: 'blue',
     strokeWidth: 5,
@@ -206,7 +207,7 @@ var arrowFirstPrev9 = new Konva.Arrow({
     tension: 0.5,
     pointerLength: 10,
     pointerWidth: 10,
-    id: "arrowbigprev",
+    id: "arrowprev9",
     fill: 'red',
     stroke: 'red',
     strokeWidth: 5,
@@ -422,6 +423,7 @@ var arrowSearch = new Konva.Arrow({
 
 // add the layer to the stage
 stage.add(layer);
+
 layer.add(base);
 layer.add(size);
 layer.add(headers);
@@ -448,10 +450,12 @@ layer.add(arrowNext1);
 layer.add(arrowPrev1);
 layer.add(arrowNext0);
 layer.add(arrowPrev0);
+
 layer.draw();
 
 var pc=1;
 
+/* for the search arrow */
 var arrowarray1 = [580, 475, 665, 475];
 var newx = 450;
 var newy = 455;
@@ -486,26 +490,40 @@ var nodetxty = yStart - 400;
 var noderecy = yStart - 400;
 var arrowarraynextstraight = [980, 65, 1045, 65];
 var arrowarrayprevstraight = [1045, 85, 980, 85];
-var arrowarraybignext = [1345, 65, 1045, 30, 680, 65];
-var arrowarraybigprev = [680, 85, 845, 130, 1045, 85];
 
+var arrowarraynext9init = [1345, 65, 1045, 30, 680, 65];
+var arrowarrayprev9init = [680, 85, 845, 130, 1045, 85];
+var arrowarraynext9 = [1345, 65, 1045, 30, 680, 65];
+var arrowarrayprev9 = [680, 85, 845, 130, 1045, 85];
+
+var arrowarraynext8init = [980, 165, 850, 120, 680, 165];
+var arrowarrayprev8init = [680, 185, 630, 190, 680, 200];
 var arrowarraynext8 = [980, 165, 850, 120, 680, 165];
 var arrowarrayprev8 = [680, 185, 630, 190, 680, 200];
 
+var arrowarraynext7init = [980, 265, 850, 220, 680, 265];
+var arrowarrayprev7init = [680, 285, 630, 290, 680, 300];
 var arrowarraynext7 = [980, 265, 850, 220, 680, 265];
 var arrowarrayprev7 = [680, 285, 630, 290, 680, 300];
 
+var arrowarraynext6init = [980, 365, 850, 320, 680, 365];
+var arrowarrayprev6init = [680, 385, 630, 390, 680, 400];
 var arrowarraynext6 = [980, 365, 850, 320, 680, 365];
 var arrowarrayprev6 = [680, 385, 630, 390, 680, 400];
 
+var arrowarraynext5init = [980, 465, 850, 420, 680, 465];
+var arrowarrayprev5init = [680, 485, 630, 490, 680, 500];
 var arrowarraynext5 = [980, 465, 850, 420, 680, 465];
 var arrowarrayprev5 = [680, 485, 630, 490, 680, 500];
 
 var arrowarraybuddy = [10+cellWidth1*0.5, 245, 10+cellWidth1*0.5, 100];
+var arrowarrayp = [20, 295, 20, 100];
 
-/* this runs when user clicks the button */
-function origflow() {
+/* this runs when user clicks the "next step" button */
+function nextstep() {
     if(pc == 1){
+		// draw the first block header
+		drawRectWithText(xStart1, yStart1, 10, cellHeight, "", "#cd5c5c","blockheader");
 		layer.add(search);
 		layer.add(arrowSearch);
         layer.draw();
@@ -528,41 +546,38 @@ function origflow() {
         pc=pc+1;
     }else if(pc == 6){
 		/* draw another block header. */
-		drawRectWithText(xStart1+cellWidth1*0.5, yStart1, 10, cellHeight, "", "#cd5c5c","blockheader");
+		drawRectWithText(xStart1+cellWidth1*0.5, yStart1, 10, cellHeight, "", "#cd5c5c","bh8");
 		layer.add(arrowBuddy);
 		layer.add(buddy);
         layer.draw();
         pc=pc+1;
     }else if(pc == 7){
 		/* draw another block header. */
-		nodetxty = nodetxty + 100;
-		noderecy = noderecy + 100;
-    	stage.find('#txt:node').y(nodetxty);
-    	stage.find('#txt:node').text("block header (tag=FREE, kval=8)");
-    	stage.find('#rec:node').y(noderecy);
+    	stage.find('#txt:node9').hide();
+    	stage.find('#rec:node9').hide();
+		drawRectWithText(1045, yStart-300, cellWidth, cellHeight, "block header (tag=FREE, kval=8)", "#99dd","node8");
 		/* modify arrows */
-		arrowarraynextstraight[1] = arrowarraynextstraight[1] + 100;
-		arrowarraynextstraight[3] = arrowarraynextstraight[3] + 100;
-    	stage.find('#arrownextstraight').points(arrowarraynextstraight);
-		arrowarrayprevstraight[1] = arrowarrayprevstraight[1] + 100;
-		arrowarrayprevstraight[3] = arrowarrayprevstraight[3] + 100;
-    	stage.find('#arrowprevstraight').points(arrowarrayprevstraight);
-		arrowarraybignext[1] = arrowarraybignext[1] + 100;
-		arrowarraybignext[3] = arrowarraybignext[3] + 100;
-		arrowarraybignext[5] = arrowarraybignext[5] + 100;
-    	stage.find('#arrowbignext').points(arrowarraybignext);
-		arrowarraybigprev[1] = arrowarraybigprev[1] + 100;
-		arrowarraybigprev[3] = arrowarraybigprev[3] + 100;
-		arrowarraybigprev[5] = arrowarraybigprev[5] + 100;
-    	stage.find('#arrowbigprev').points(arrowarraybigprev);
-		arrowarraynext8[1] = arrowarraynext8[1] - 100;
-		arrowarraynext8[3] = arrowarraynext8[3] - 100;
-		arrowarraynext8[5] = arrowarraynext8[5] - 100;
+		/* hide the two straight arrows at level 9. */
+    	stage.find('#arrownextstraight').hide();
+    	stage.find('#arrowprevstraight').hide();
+		arrowarraynext9[0] = arrowarraynext9[0] - 365;
+		arrowarraynext9[2] = arrowarraynext9[2] - 200;
+    	stage.find('#arrownext9').points(arrowarraynext9);
+		arrowarrayprev9[2] = arrowarrayprev9[2] - 220; // FIXME: - 220??
+		arrowarrayprev9[3] = arrowarrayprev9[3] - 35;
+		arrowarrayprev9[4] = arrowarrayprev9[4] - 365;
+		arrowarrayprev9[5] = arrowarrayprev9[5] + 15; // FIXME: + 10??
+    	stage.find('#arrowprev9').points(arrowarrayprev9);
+		/* arrows 8 */
+		arrowarraynext8[0] = arrowarraynext8[0] + 365;
+		arrowarraynext8[2] = arrowarraynext8[2] + 200;
     	stage.find('#arrownext8').points(arrowarraynext8);
-		arrowarrayprev8[1] = arrowarrayprev8[1] - 100;
-		arrowarrayprev8[3] = arrowarrayprev8[3] - 100;
-		arrowarrayprev8[5] = arrowarrayprev8[5] - 100;
+		arrowarrayprev8[2] = arrowarrayprev8[2] + 200;
+		arrowarrayprev8[3] = arrowarrayprev8[3] + 30;
+		arrowarrayprev8[4] = arrowarrayprev8[4] + 365;
+		arrowarrayprev8[5] = arrowarrayprev8[5] - 20;
     	stage.find('#arrowprev8').points(arrowarrayprev8);
+		drawTwoArrows(100,"level8");
 		/* move down the search/split arrow */
 		movearrowDownsplit();
     	stage.find('#search').text("add a new node here");
@@ -571,7 +586,7 @@ function origflow() {
         pc=pc+1;
     }else if(pc == 8){
 		/* draw another block header. */
-		drawRectWithText(xStart1+cellWidth1*0.25, yStart1, 10, cellHeight, "", "#cd5c5c","blockheader");
+		drawRectWithText(xStart1+cellWidth1*0.25, yStart1, 10, cellHeight, "", "#cd5c5c","bh7");
 		arrowarraybuddy[0] = xStart1+cellWidth1*0.25;
 		arrowarraybuddy[2] = xStart1+cellWidth1*0.25;
     	stage.find('#arrowbuddy').points(arrowarraybuddy);
@@ -579,7 +594,7 @@ function origflow() {
         layer.draw();
         pc=pc+1;
     }else if(pc == 9){
-		drawRectWithText(1045, yStart-200, cellWidth, cellHeight, "block header (tag=FREE, kval=7)", "#99dd","node");
+		drawRectWithText(1045, yStart-200, cellWidth, cellHeight, "block header (tag=FREE, kval=7)", "#99dd","node7");
 		arrowarraynext7[0] = arrowarraynext7[0] + 365;
 		arrowarraynext7[2] = arrowarraynext7[2] + 200;
     	stage.find('#arrownext7').points(arrowarraynext7);
@@ -595,7 +610,7 @@ function origflow() {
         pc=pc+1;
     }else if(pc == 10){
 		/* draw another block header. */
-		drawRectWithText(xStart1+cellWidth1*0.125, yStart1, 10, cellHeight, "", "#cd5c5c","blockheader");
+		drawRectWithText(xStart1+cellWidth1*0.125, yStart1, 10, cellHeight, "", "#cd5c5c","bh6");
 		arrowarraybuddy[0] = xStart1+cellWidth1*0.125;
 		arrowarraybuddy[2] = xStart1+cellWidth1*0.125;
     	stage.find('#arrowbuddy').points(arrowarraybuddy);
@@ -603,7 +618,7 @@ function origflow() {
         layer.draw();
         pc=pc+1;
     }else if(pc == 11){
-		drawRectWithText(1045, yStart-100, cellWidth, cellHeight, "block header (tag=FREE, kval=6)", "#99dd","node");
+		drawRectWithText(1045, yStart-100, cellWidth, cellHeight, "block header (tag=FREE, kval=6)", "#99dd","node6");
 		arrowarraynext6[0] = arrowarraynext6[0] + 365;
 		arrowarraynext6[2] = arrowarraynext6[2] + 200;
     	stage.find('#arrownext6').points(arrowarraynext6);
@@ -619,7 +634,7 @@ function origflow() {
         pc=pc+1;
     }else if(pc == 12){
 		/* draw another block header. */
-		drawRectWithText(xStart1+cellWidth1*0.0625, yStart1, 10, cellHeight, "", "#cd5c5c","blockheader");
+		drawRectWithText(xStart1+cellWidth1*0.0625, yStart1, 10, cellHeight, "", "#cd5c5c","bh5");
 		arrowarraybuddy[0] = xStart1+cellWidth1*0.0625;
 		arrowarraybuddy[2] = xStart1+cellWidth1*0.0625;
     	stage.find('#arrowbuddy').points(arrowarraybuddy);
@@ -627,7 +642,7 @@ function origflow() {
         layer.draw();
         pc=pc+1;
     }else if(pc == 13){
-		drawRectWithText(1045, yStart, cellWidth, cellHeight, "block header (tag=FREE, kval=5)", "#99dd","node");
+		drawRectWithText(1045, yStart, cellWidth, cellHeight, "block header (tag=FREE, kval=5)", "#99dd","node5");
 		arrowarraynext5[0] = arrowarraynext5[0] + 365;
 		arrowarraynext5[2] = arrowarraynext5[2] + 200;
     	stage.find('#arrownext5').points(arrowarraynext5);
@@ -641,7 +656,233 @@ function origflow() {
 		movearrowDownsplit();
         layer.draw();
         pc=pc+1;
+    }else if(pc == 14){
+		layer.add(arrowP);
+		layer.add(p);
+        layer.draw();
+        pc=pc+1;
 	}
 }
 
+/* this runs when user clicks the "next step in free()" button */
+function nextstepinfree() {
+    if(pc == 15){
+    	stage.find('#p').text("p (now the user calls free(p))");
+    	stage.find('#search').hide();
+    	stage.find('#arrowsearch').hide();
+        layer.draw();
+        pc=pc+1;
+    }else if(pc == 16){
+		/* move p back 24 bytes is the first step in free. */
+		arrowarrayp[0] = arrowarrayp[0] - 10;
+		arrowarrayp[2] = arrowarrayp[2] - 10;
+    	stage.find('#arrowp').points(arrowarrayp);
+    	stage.find('#p').text("p (move p back 24 bytes)");
+        layer.draw();
+        pc=pc+1;
+    }else if(pc == 17){
+    	stage.find('#search').text("remove buddy from list");
+    	stage.find('#search').x(1050);
+    	stage.find('#search').y(620);
+		arrowarray1[0] = arrowarray1[0] + 600;
+		arrowarray1[1] = arrowarray1[1] + 140;
+		arrowarray1[2] = arrowarray1[0];
+		arrowarray1[3] = arrowarray1[3] + 40;
+    	stage.find('#arrowsearch').points(arrowarray1);
+    	stage.find('#search').show();
+    	stage.find('#arrowsearch').show();
+    	stage.find('#p').text("p");
+        layer.draw();
+        pc=pc+1;
+    }else if(pc == 18){
+		/* the actual removal of buddy */
+    	stage.find('#rec:node5').hide();
+    	stage.find('#txt:node5').hide();
+    	stage.find('#arrowr:level5').hide();
+    	stage.find('#arrowl:level5').hide();
+    	stage.find('#search').hide();
+    	stage.find('#arrowsearch').hide();
+		/* restore the two arrows to its initial state. */
+		arrowarraynext5[0] = arrowarraynext5init[0];
+		arrowarraynext5[2] = arrowarraynext5init[2];
+    	stage.find('#arrownext5').points(arrowarraynext5);
+		arrowarrayprev5[2] = arrowarrayprev5init[2];
+		arrowarrayprev5[3] = arrowarrayprev5init[3];
+		arrowarrayprev5[4] = arrowarrayprev5init[4];
+		arrowarrayprev5[5] = arrowarrayprev5init[5];
+    	stage.find('#arrowprev5').points(arrowarrayprev5);
+        layer.draw();
+        pc=pc+1;
+    }else if(pc == 19){
+		/* update buddy, hide the old one, don't need it anymore. */
+		arrowarraybuddy[0] = xStart1+cellWidth1*0.125;
+		arrowarraybuddy[2] = xStart1+cellWidth1*0.125;
+    	stage.find('#arrowbuddy').points(arrowarraybuddy);
+    	stage.find('#buddy').x(xStart1+cellWidth1*0.125);
+		/* hide the block header, we don't need it anymore. */
+    	stage.find('#rec:bh5').hide();
+    	stage.find('#txt:bh5').hide();
+        layer.draw();
+        pc=pc+1;
+    }else if(pc == 20){
+		/* move 100 up, 620 to 520 */
+    	stage.find('#search').y(520);
+		arrowarray1[1] = arrowarray1[1] - 100;
+		arrowarray1[3] = arrowarray1[3] - 100;
+    	stage.find('#arrowsearch').points(arrowarray1);
+    	stage.find('#search').show();
+    	stage.find('#arrowsearch').show();
+        layer.draw();
+        pc=pc+1;
+    }else if(pc == 21){
+		/* the actual removal of buddy */
+    	stage.find('#rec:node6').hide();
+    	stage.find('#txt:node6').hide();
+    	stage.find('#arrowr:level6').hide();
+    	stage.find('#arrowl:level6').hide();
+    	stage.find('#search').hide();
+    	stage.find('#arrowsearch').hide();
+		/* restore the two arrows to its initial state. */
+		arrowarraynext6[0] = arrowarraynext6init[0];
+		arrowarraynext6[2] = arrowarraynext6init[2];
+    	stage.find('#arrownext6').points(arrowarraynext6);
+		arrowarrayprev6[2] = arrowarrayprev6init[2];
+		arrowarrayprev6[3] = arrowarrayprev6init[3];
+		arrowarrayprev6[4] = arrowarrayprev6init[4];
+		arrowarrayprev6[5] = arrowarrayprev6init[5];
+    	stage.find('#arrowprev6').points(arrowarrayprev6);
+        layer.draw();
+        pc=pc+1;
+    }else if(pc == 22){
+		/* update buddy, hide the old one, don't need it anymore. */
+		arrowarraybuddy[0] = xStart1+cellWidth1*0.25;
+		arrowarraybuddy[2] = xStart1+cellWidth1*0.25;
+    	stage.find('#arrowbuddy').points(arrowarraybuddy);
+    	stage.find('#buddy').x(xStart1+cellWidth1*0.25);
+		/* hide the block header, we don't need it anymore. */
+    	stage.find('#rec:bh6').hide();
+    	stage.find('#txt:bh6').hide();
+        layer.draw();
+        pc=pc+1;
+    }else if(pc == 23){
+		/* move 100 up, 520 to 420 */
+    	stage.find('#search').y(420);
+		arrowarray1[1] = arrowarray1[1] - 100;
+		arrowarray1[3] = arrowarray1[3] - 100;
+    	stage.find('#arrowsearch').points(arrowarray1);
+    	stage.find('#search').show();
+    	stage.find('#arrowsearch').show();
+        layer.draw();
+        pc=pc+1;
+    }else if(pc == 24){
+		/* the actual removal of buddy */
+    	stage.find('#rec:node7').hide();
+    	stage.find('#txt:node7').hide();
+    	stage.find('#arrowr:level7').hide();
+    	stage.find('#arrowl:level7').hide();
+    	stage.find('#search').hide();
+    	stage.find('#arrowsearch').hide();
+		/* restore the two arrows to its initial state. */
+		arrowarraynext7[0] = arrowarraynext7init[0];
+		arrowarraynext7[2] = arrowarraynext7init[2];
+    	stage.find('#arrownext7').points(arrowarraynext7);
+		arrowarrayprev7[2] = arrowarrayprev7init[2];
+		arrowarrayprev7[3] = arrowarrayprev7init[3];
+		arrowarrayprev7[4] = arrowarrayprev7init[4];
+		arrowarrayprev7[5] = arrowarrayprev7init[5];
+    	stage.find('#arrowprev7').points(arrowarrayprev7);
+        layer.draw();
+        pc=pc+1;
+    }else if(pc == 25){
+		/* update buddy, hide the old one, don't need it anymore. */
+		arrowarraybuddy[0] = xStart1+cellWidth1*0.5;
+		arrowarraybuddy[2] = xStart1+cellWidth1*0.5;
+    	stage.find('#arrowbuddy').points(arrowarraybuddy);
+    	stage.find('#buddy').x(xStart1+cellWidth1*0.5);
+		/* hide the block header, we don't need it anymore. */
+    	stage.find('#rec:bh7').hide();
+    	stage.find('#txt:bh7').hide();
+        layer.draw();
+        pc=pc+1;
+    }else if(pc == 26){
+		/* move 100 up, 420 to 320 */
+    	stage.find('#search').y(320);
+		arrowarray1[1] = arrowarray1[1] - 100;
+		arrowarray1[3] = arrowarray1[3] - 100;
+    	stage.find('#arrowsearch').points(arrowarray1);
+    	stage.find('#search').show();
+    	stage.find('#arrowsearch').show();
+        layer.draw();
+        pc=pc+1;
+    }else if(pc == 27){
+		/* the actual removal of buddy */
+    	stage.find('#rec:node8').hide();
+    	stage.find('#txt:node8').hide();
+    	stage.find('#arrowr:level8').hide();
+    	stage.find('#arrowl:level8').hide();
+    	stage.find('#search').hide();
+    	stage.find('#arrowsearch').hide();
+		/* restore the two arrows to its initial state. */
+		arrowarraynext8[0] = arrowarraynext8init[0];
+		arrowarraynext8[2] = arrowarraynext8init[2];
+    	stage.find('#arrownext8').points(arrowarraynext8);
+		arrowarrayprev8[2] = arrowarrayprev8init[2];
+		arrowarrayprev8[3] = arrowarrayprev8init[3];
+		arrowarrayprev8[4] = arrowarrayprev8init[4];
+		arrowarrayprev8[5] = arrowarrayprev8init[5];
+    	stage.find('#arrowprev8').points(arrowarrayprev8);
+        layer.draw();
+        pc=pc+1;
+    }else if(pc == 28){
+		/* update buddy, hide the old one, don't need it anymore. */
+    	stage.find('#arrowbuddy').hide();
+    	stage.find('#buddy').hide();
+		/* hide the block header, we don't need it anymore. */
+    	stage.find('#rec:bh8').hide();
+    	stage.find('#txt:bh8').hide();
+        layer.draw();
+        pc=pc+1;
+    }else if(pc == 29){
+		/* move 100 up, 320 to 220 */
+    	stage.find('#search').y(220);
+    	stage.find('#search').text("    add one node here");
+    	stage.find('#search').show();
+		arrowarray1[1] = arrowarray1[1] - 100;
+		arrowarray1[3] = arrowarray1[3] - 100;
+    	stage.find('#arrowsearch').points(arrowarray1);
+    	stage.find('#arrowsearch').show();
+        layer.draw();
+        pc=pc+1;
+    }else if(pc == 30){
+		/* restore everything at level 9 to its initial state. */
+    	stage.find('#txt:node9').show();
+    	stage.find('#rec:node9').show();
+    	stage.find('#arrownextstraight').show();
+    	stage.find('#arrowprevstraight').show();
+		arrowarraynext9[0] = arrowarraynext9init[0];
+		arrowarraynext9[2] = arrowarraynext9init[2];
+    	stage.find('#arrownext9').points(arrowarraynext9);
+		arrowarrayprev9[2] = arrowarrayprev9init[2];
+		arrowarrayprev9[3] = arrowarrayprev9init[3];
+		arrowarrayprev9[4] = arrowarrayprev9init[4];
+		arrowarrayprev9[5] = arrowarrayprev9init[5];
+    	stage.find('#arrowprev9').points(arrowarrayprev9);
+		/* search arrow and its text can be hidden now. */
+    	stage.find('#search').hide();
+    	stage.find('#arrowsearch').hide();
+        layer.draw();
+        pc=pc+1;
+    }else if(pc == 31){
+    	stage.find('#p').text("p is now freed");
+        layer.draw();
+        pc=pc+1;
+    }else if(pc == 32){
+    	stage.find('#p').hide();
+    	stage.find('#arrowp').hide();
+        layer.draw();
+		/* go back to the original state. */
+        pc=pc+1;
+	}
+}
 /* vim: set ts=4: */
+
